@@ -10,17 +10,19 @@
 <script>
     export default {
       props: {
-        tabList: Array
+        tabList: Array,
+        
       },
       data() {
         return {
           TabsValue: "1",
-          tabIndex: 2
+          // tabIndex: 2
         };
       },
       methods: {
         handleClick(tab, event) {
-          console.log(tab, event);
+          // console.log(tab, event);
+          this.$emit("change",tab.index)
         }
       }
     };
@@ -28,5 +30,6 @@
 <style>
     .UserTabs.el-tabs.el-tabs--top{
         text-align: left;
+        height: 720px;
     }
 </style>

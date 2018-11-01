@@ -141,7 +141,7 @@ export default {
 /* 个人信息显示 */
 .user_center ul li{
     display: inline-block;
-    width: 182px;
+    width: 179px;
     height: 200px;
     margin-right: 10px;
     float: left;
