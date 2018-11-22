@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import HomeRoutes from "./home";
 import OnlineCourseRoutes from "./online_course";
 import UsersRouters from "./users";
+import TaskRouter from "./task_center";
 
 
 Vue.use(Router)
@@ -16,6 +17,7 @@ const routes = [
   ...HomeRoutes,
   ...OnlineCourseRoutes,
   ...UsersRouters,
+  ...TaskRouter,
   {
     path:'*',
     redirect:'/home'

@@ -7,9 +7,9 @@
             <router-link class="nav_item" tag="li" to="/course">
                 <a href="javascript:void(0)" class="nav_link">线上课程</a>
             </router-link>
-            <li class="nav_item">
-                <a href="javascript:void(0)" class="nav_link">培训活动</a>
-            </li>
+            <router-link class="nav_item" tag="li" to="/task">
+                <a href="javascript:void(0)" class="nav_link">任务中心</a>
+            </router-link>
             <router-link class="nav_item" tag="li" to="/users">
                 <a href="javascript:void(0)" class="nav_link">个人中心</a>
             </router-link>
