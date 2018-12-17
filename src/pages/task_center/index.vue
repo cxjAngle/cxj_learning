@@ -35,14 +35,14 @@
                             </div>
                             <div class="train_content">
                                 <ul>
-                                    <li>
-                                        <div class="train_img"></div>
-                                        <div class="train_title_small">123456</div>
-                                        <div class="train_title_large"><span>爱的方式带给</span></div>
+                                    <li v-for="(item, index) in taskList" v-if="index < 3">
+                                        <div class="train_img" :style="{'background-image': 'url(' + attachmentUrl(item.actPicture) + ')','background-size':'cover'}"></div>
+                                        <div class="train_title_small">{{item.activityName}}</div>
+                                        <div class="train_title_large"><span>{{item.introduction}}</span></div>
                                         <div class="train_word">
-                                            <p>正在培训</p>
-                                            <p>学习开放时间:2018-04-04 15:55</p>
-                                            <p>学习结束时间:2019-04-04 19:00</p>
+                                            <p>{{getState(item.applyStatus)}}</p>
+                                            <p>学习开放时间：<span>{{item.activityStartTimeS}}</span></p>
+                                            <p>学习结束时间：<span>{{item.activityEndTimeS}}</span></p>
                                         </div>
                                     </li>
                                 </ul>
@@ -55,12 +55,60 @@
                             <div class="exam_title">
                                 <div class="title_left">未完成考试</div>
                             </div>
-                            <div class=""></div>
+                            <div class="exam_content">
+                                <div class="exam_list" v-for="(item, index) in examList" v-if="index < 4">
+                                    <ul>
+                                        <li>
+                                            <div class="exam_img" :style="{'background-image': 'url(' + attachmentUrl(item.examPaperPicture) + ')','background-size':'100% 100%'}"></div>
+                                            <div class="exam_title_small">{{item.examName}}</div>
+                                            <div class="exam_title_large"><span>{{item.examName}}</span></div>
+                                        </li>
+                                    </ul>
+                                    <div class="exam_word">
+                                        <p>状态：<span>{{item.examState}}</span></p>
+                                        <p>考试开始时间：<span>{{item.beginTime}}</span></p>
+                                        <p>考试结束时间：<span>{{item.endTime}}</span></p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- 课程 -->
                         <div class="c_bottom_right">
                             <div class="course_title">
                                 <div class="title_left">未完成课程</div>
+                            </div>
+                            <div class="course_content">
+                                <div class="course_list" v-for="(item,index) in courseList" v-if="index < 4" @click="goDetail(item.courseId)">
+                                    <ul>
+                                        <li>
+                                            <div class="course_img" :style="{'background-image': 'url(' + attachmentUrl(item.courseImg) + ')','background-size':'100% 100%'}"></div>
+                                            <div class="course_title_small">{{item.courseName}}</div>
+                                            <div class="course_title_large"><span>{{item.courseName}}</span></div>
+                                        </li>
+                                    </ul>
+                                    <div class="course_word">
+                                        <p v-show="item.status == 2">未签到</p>
+                                        <p v-show="item.status == 4">未学习</p>
+                                        <p v-show="item.status == 5">学习中</p>
+                                        <p v-show="item.status == 6">未开始</p>
+                                        <p>
+                                            <ul>
+                                                <li>
+                                                    <icon name="commentIcon" scale="1.5" class="comment_icon"></icon>
+                                                    <span>{{item.commentCount}}</span>
+                                                </li>
+                                                <li>
+                                                    <icon name="viewsIcon" scale="2" class="views_icon"></icon>
+                                                    <span>{{item.viewers}}</span>
+                                                </li>
+                                                <li>
+                                                    <icon name="pressIcon" scale="2" class="press_icon"></icon>
+                                                    <span>{{item.thumbUpCount}}</span>
+                                                </li> 
+                                            </ul>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -74,12 +122,15 @@
 import Homeheader from "@/components/headers/homeHeader.vue";
 import HomeFooter from "@/components/footers/HomeFooter.vue";
 import MainNav from "@/components/navs/MainNav.vue";
-import {getTaskList} from "@/services/api/task.js";
+import {getTaskList, getExamList, getCourseList} from "@/services/api/task.js";
 export default {
     data(){
         return{
             firstIndex:0,
-            pageSize:3
+            pageSize:3,
+            taskList:[],
+            examList: [],
+            courseList: []
         }
     },
     components: {
@@ -92,18 +143,45 @@ export default {
     },
     methods: {
         getList(){
-          const data = {firstIndex: this.currentPage, pageSize: this.pageSize};
-          getTaskList(data).then(res=>{
-            this.taskList = res.data;
-            console.log(this.taskList)
-            // console.log(this.myCourseList)
-            this.count = res.count;
-          });
+            const data = {firstIndex: this.currentPage, pageSize: this.pageSize};
+            getTaskList(data).then(res=>{
+                this.taskList = res.data;
+                // console.log(this.taskList)
+                this.count = res.count;
+            });
+            getExamList(data).then(res=>{
+                this.examList = res.data;
+                // console.log(this.examList)
+                this.count = res.count;
+            });
+            getCourseList(data).then(res=>{
+                this.courseList = res.data;
+                console.log(this.courseList)
+                this.count = res.count;
+            });
         },
+        // 培训状态
+        getState(state){
+            if(state == 1) return '等待报名';
+            if(state == 2) return '我要报名(未报名)';
+            if(state == 3) return '取消报名(已报名)';
+            if(state == 4) return '等待培训';
+            if(state == 5) return '正在培训';
+            if(state == 6) return '任务成功';
+            if(state == 7) return '任务失败';
+            if(state == 8) return '推送中';
+            if(state == 9) return '推送失败';
+            if(state == 10) return '推送成功';
+            if(state == 11) return '推送成功';
+        },
+        // 点击课程进入详情
+        goDetail(id){
+            this.$router.push({name:'/courseLearning',params:{id:id}});
+        }
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .content-wrap {
     height: 100%;
 }
@@ -170,12 +248,16 @@ export default {
 }
 .train_content ul li{
     float: left;
-    margin-right: 15px;
+    margin-right: 6px;
     width: 282px;
 }
 .train_content ul li .train_word{
     background-color: #fafafa;
     padding: 10px 10px;
+    p{
+        text-align: left;
+        line-height: 30px;
+    }
 }
 .train_content ul li .train_title_small{
     background: #000;
@@ -238,6 +320,64 @@ export default {
     height: 55px;
     background-color: #f5f5f5;
 }
+.exam_list{
+    float: left;
+    margin-left: 10px;
+    margin-top: 10px;
+    position: relative;
+}
+.exam_list ul li .exam_img{
+    width: 282px;
+    height: 141px;
+}
+.exam_list ul li .exam_title_small{
+    background: #000;
+    opacity: 0.5;
+    filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    color: #fff;
+    position: absolute;
+    bottom: 108px;
+    width: 282px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    font-family: "宋体";
+    cursor: pointer;
+}
+.exam_list ul li:hover .exam_title_small{
+    display: none;
+}
+.exam_list ul li:hover .exam_title_large{
+    display: block;
+}
+.exam_list ul li .exam_title_large{
+    position: absolute;
+    top: 0px;
+    background: #000;
+    opacity: 0.5;
+    filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    width: 282px;
+    height: 141px;
+    color: #fff;
+    display: none;
+}
+.exam_list ul li .exam_title_large span{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    width: 282px;
+    height: 141px;
+}
+.exam_word{
+    background-color: #fafafa;
+    padding: 10px 10px;
+    p{
+        text-align: left;
+        line-height: 30px;
+    }
+}
 /* 课程 */
 .c_bottom_right{
     width: 595px;
@@ -249,5 +389,69 @@ export default {
     width: 593px;
     height: 55px;
     background-color: #f5f5f5;
+}
+.course_list{
+    float: left;
+    margin-left: 10px;
+    margin-top: 10px;
+    position: relative;
+}
+.course_list ul li .course_img{
+    width: 282px;
+    height: 141px;;
+}
+.course_list ul li .course_title_small{
+    background: #000;
+    opacity: 0.5;
+    filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    color: #fff;
+    position: absolute;
+    bottom: 80px;
+    width: 282px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 14px;
+    font-family: "宋体";
+    cursor: pointer;
+}
+.course_list ul li:hover .course_title_small{
+    display: none;
+}
+.course_list ul li:hover .course_title_large{
+    display: block;
+}
+.course_list ul li .course_title_large{
+    position: absolute;
+    top: 0px;
+    background: #000;
+    opacity: 0.5;
+    filter: "alpha(opacity=50)";
+    filter: alpha(opacity=50);
+    width: 282px;
+    height: 141px;
+    color: #fff;
+    display: none;
+}
+.course_list ul li .course_title_large span{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    width: 282px;
+    height: 141px;
+}
+.course_word{
+    background-color: #fafafa;
+    padding: 10px 10px;
+    p{
+        overflow: hidden;
+        text-align: left;
+    }
+    p ul li{
+        float: left;
+        line-height: 30px;
+        width: 33%;
+        margin-top: 10px;
+    }
 }
 </style>

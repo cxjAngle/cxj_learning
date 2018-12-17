@@ -30,7 +30,7 @@ export function getHeadline(params) {
 }
 
 export function getNewCourse(params) {
-  const defaultParams = { apiName: "ELE_ONLINE_COURSE_LIST", apiType: "course", firstIndex:0, pageSize:9 };
+  const defaultParams = { apiName: "ELE_NEW_COURSE_LIST", apiType: "course", firstIndex:0, pageSize:9 };
   return new Promise((resolve, reject) => {
       get(Object.assign(defaultParams, params)).then(res => {
           res.status == 'Y' ? resolve(res.results) : reject(res)
@@ -39,7 +39,7 @@ export function getNewCourse(params) {
 }
 
 export function getWellCourse(params) {
-  const defaultParams = { apiName: "ELE_ONLINE_COURSE_LIST", apiType: "course",  firstIndex:0, pageSize:5 };
+  const defaultParams = { apiName: "ELE_ONLINE_COURSE_LIST", apiType: "course", listOrder:'VIEWERS', orderBy:'desc',  firstIndex:0, pageSize:5 };
   return new Promise((resolve, reject) => {
       get(Object.assign(defaultParams, params)).then(res => {
           res.status == 'Y' ? resolve(res.results) : reject(res)

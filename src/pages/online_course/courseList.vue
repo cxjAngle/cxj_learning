@@ -21,7 +21,7 @@
       <div class="course_list">   
         <noDate v-if="coursedata.length == 0"></noDate> 
         <ul>
-          <li v-for="(item) in coursedata">
+          <li v-for="(item) in coursedata" @click="goDetail(item.courseId)">
             <div class="">
               <span class="course_well"></span>
               <div class="course_large">
@@ -140,6 +140,10 @@
         this.currentPage = page;
         console.log(this.currentPage)
         this.getList();
+      },
+      // 跳转到详情页
+      goDetail(id){
+        this.$router.push({name:'/courseLearning',params:{id:id}})
       }
     }
   };
